@@ -25,7 +25,7 @@ struct RootTabView: View {
             }
             
             NavigationStack {
-//                InsightsView()
+                InsightsView()
             }
             .tabItem {
                 Label("Insights", systemImage: "chart.bar.xaxis")
