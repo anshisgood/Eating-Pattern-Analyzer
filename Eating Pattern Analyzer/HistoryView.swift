@@ -143,5 +143,5 @@ struct HistoryView: View {
 
 #Preview {
     HistoryView()
+        .modelContainer(for: Meal.self, inMemory: true)
 }
-

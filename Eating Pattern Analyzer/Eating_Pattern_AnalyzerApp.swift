@@ -12,7 +12,7 @@ import SwiftData
 struct Eating_Pattern_AnalyzerApp: App {
     var body: some Scene {
         WindowGroup {
-            RootView()
+            RootTabView()
         }
         .modelContainer(for: Meal.self)
     }
