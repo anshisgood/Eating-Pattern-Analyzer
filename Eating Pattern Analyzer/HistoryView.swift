@@ -18,6 +18,11 @@ struct HistoryView: View {
         }
     }
     
+    @Environment(\.modelContext) private var modelContext
+    
+    @State private var pendingDelete: (day: Date, offsets: IndexSet)?
+    @State private var showDeleteConfirmation = false
+    
     var body: some View {
         List {
             ForEach(groupedMeals.keys.sorted(by: >), id: \.self) { day in
@@ -29,6 +34,10 @@ struct HistoryView: View {
                             MealRowView(meal: meal)
                         }
                     }
+                    .onDelete { indexSet in
+                        pendingDelete = (day: day, offsets: indexSet)
+                        showDeleteConfirmation = true
+                    }
                 } header: {
                     Text(sectionTitle(date: day))
                 }
@@ -36,9 +45,24 @@ struct HistoryView: View {
         }
         .navigationTitle("Meal History")
         .listStyle(.insetGrouped)
+        .confirmationDialog("Delete Meal?", isPresented: $showDeleteConfirmation, titleVisibility: .visible) {
+            Button("Delete", role: .destructive) { confirmDelete() }
+            Button("Cancel", role: .cancel) { pendingDelete = nil }
+        }
     }
     
-
+    private func confirmDelete() {
+        guard
+            let pendingDelete,
+            let mealsForDay = groupedMeals[pendingDelete.day]
+        else { return }
+        
+        for index in pendingDelete.offsets {
+            modelContext.delete(mealsForDay[index])
+        }
+        
+        self.pendingDelete = nil
+    }
 
     private func sectionTitle(date: Date) -> String {
         let calendar = Calendar.current
