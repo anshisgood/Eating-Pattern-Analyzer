@@ -8,6 +8,15 @@
 import SwiftUI
 import SwiftData
 
+// THIS STRUCT IS TEMPORARY, ONLY FOR XCODE PREVIEWS SO IT ALL RUNS ON THE SAME MEMORY, DELETE DURING PUBLISHING **********************************
+struct RootView: View {
+    var body: some View {
+        NavigationStack {
+            MealForm()
+        }
+    }
+}
+
 struct MealForm: View {
     // Form States
     @State private var mealDate: Date = Date()
@@ -22,6 +31,9 @@ struct MealForm: View {
     
     var body: some View {
         NavigationStack {
+            NavigationLink("hello") {
+                HistoryView()
+            }
             Form {
                 // Header
                 Section {
@@ -182,7 +194,8 @@ struct MealForm: View {
 }
 
 #Preview {
-    MealForm()
+    RootView()
+        .modelContainer(for: Meal.self, inMemory: true)
 }
 
 @Model
