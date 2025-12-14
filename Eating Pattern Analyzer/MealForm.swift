@@ -23,13 +23,37 @@ struct MealForm: View {
     var body: some View {
         NavigationStack {
             Form {
+                // Header
                 Section {
-                    DatePicker("When did you eat?", selection: $mealDate, displayedComponents: [.date, .hourAndMinute])
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("What did you eat today?")
+                            .font(.largeTitle)
+                            .fontWeight(.bold)
+                        
+                        Text("Log your meals to better understand your eating patterns.")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.vertical, 12)
                 }
+                .listRowBackground(Color.clear)
+                .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
+                .listRowSeparator(.hidden)
+                .overlay(Divider().opacity(0.2), alignment: .bottom)
                 
+                // Add Food Item
                 Section("Food") {
-                    TextField("Food name", text: $foodName)
-                    TextField("Quantity (e.g. 2 slices)", text: $quantity)
+                    VStack(alignment: .leading, spacing: 8) {
+                        TextField("Food name", text: $foodName)
+                    }
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 0))
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        TextField("Quantity (e.g. 2 slices)", text: $quantity)
+                    }
+                    .listRowInsets(EdgeInsets(top: 8, leading: 16, bottom: 8, trailing: 0))
+                    
+                    
                     
                     Button {
                         addFood()
@@ -39,6 +63,7 @@ struct MealForm: View {
                     .disabled(foodName.isEmpty)
                 }
                 
+                // Food Items Display
                 if !foods.isEmpty {
                     Section("Added Items") {
                         ForEach(foods) { food in
@@ -53,6 +78,15 @@ struct MealForm: View {
                     }
                 }
                 
+                // Select Date & Time
+                Section("Time") {
+                    DatePicker("", selection: $mealDate, displayedComponents: [.date, .hourAndMinute])
+                        .datePickerStyle(.wheel)
+                        .labelsHidden()
+                        .frame(maxWidth: .infinity)
+                }
+                
+                // Select Tag(s)
                 Section("Tags") {
                     FlowLayout {
                         ForEach(MealTag.allCases, id: \.self) { tag in
@@ -68,6 +102,7 @@ struct MealForm: View {
                     .padding(.vertical, 4)
                 }
                 
+                // Submit Meal
                 Section {
                     Button {
                         saveMeal()
@@ -78,10 +113,8 @@ struct MealForm: View {
                     .disabled(foods.isEmpty)
                 }
                 
-                
-                
             }
-            .navigationTitle("Log Todays Meal")
+            .navigationBarTitleDisplayMode(.inline)
         }
     }
     
@@ -126,15 +159,15 @@ struct MealForm: View {
         let isSelected: Bool
         let action: () -> Void
         
+        private let size: CGFloat = 50
+        
         var body: some View {
             Button(action: action) {
                 Text(tag.rawValue)
                     .font(.caption)
-                    .padding(.horizontal, 12)
-                    .padding(.vertical, 6)
-                    .background(isSelected ? Color.accentColor : Color(.systemGray5))
+                    .frame(width: size, height: size)
+                    .background(Circle().fill(isSelected ? Color.accentColor : Color(.systemGray5)))
                     .foregroundStyle(isSelected ? .white : .primary)
-                    .clipShape(Capsule())
             }
             .buttonStyle(.plain)
         }
