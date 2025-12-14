@@ -11,7 +11,7 @@ import SwiftUI
 struct Eating_Pattern_AnalyzerApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            MealForm()
         }
     }
 }
