@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct MealForm: View {
     // Form States
@@ -16,9 +17,8 @@ struct MealForm: View {
     @State private var foods: [FoodItem] = []
     @State private var selectedTags: Set<MealTag> = []
     
-    // UI States
-    @Environment(\.dismiss) private var dismiss
-    
+    // SwiftData
+    @Environment(\.modelContext) private var modelContext
     
     var body: some View {
         NavigationStack {
@@ -124,6 +124,7 @@ struct MealForm: View {
             name: foodName,
             quantity: quantity.isEmpty ? "-" : quantity
         ))
+        // reset:
         foodName = ""
         quantity = ""
     }
@@ -133,10 +134,16 @@ struct MealForm: View {
     }
     
     private func saveMeal() {
-        // TODO: Convert from state intoo Meal model
-        //TODO: Store data locally using SwiftData
+        let meal = Meal(
+            date: mealDate,
+            foods: foods,
+            tags: Array(selectedTags)
+        )
         
-        dismiss()
+        modelContext.insert(meal)
+        // reset:
+        foods.removeAll()
+        selectedTags.removeAll()
     }
     
     struct FlowLayout<Content: View>: View {
@@ -178,25 +185,34 @@ struct MealForm: View {
     MealForm()
 }
 
-// This is my first swift app, so some comments may seem obvious, but they are only here for my reference & for my learning.
-
-// Identifiable protocol indicates that each struct instance has a unique id
-// Codable protocol makes conversion to external data formats easy
-struct Meal: Identifiable, Codable {
-    let id: UUID
-    let date: Date
-    let foods: [FoodItem]
-    let tags: [MealTag]
+@Model
+class Meal {
+    var id: UUID
+    var date: Date
+    var foods: [FoodItem]
+    var tags: [MealTag]
+    
+    init(id: UUID = UUID(), date: Date, foods: [FoodItem], tags: [MealTag]) {
+        self.id = id
+        self.date = date
+        self.foods = foods
+        self.tags = tags
+    }
 }
 
-struct FoodItem: Identifiable, Codable {
-    let id: UUID
-    let name: String
-    let quantity: String
+@Model
+class FoodItem {
+    var id: UUID
+    var name: String
+    var quantity: String
+    
+    init(id: UUID = UUID(), name: String, quantity: String) {
+        self.id = id
+        self.name = name
+        self.quantity = quantity
+    }
 }
 
-// String is interestingly not a protocol, but a raw-value type. Confusing how it's listed with the other protocols.
-// CaseIterable protocol indicates that enum can iterate over all cases with: MealTag.allCases
 enum MealTag: String, Codable, CaseIterable {
     case snack
     case meal

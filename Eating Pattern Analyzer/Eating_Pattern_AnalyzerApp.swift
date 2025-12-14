@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct Eating_Pattern_AnalyzerApp: App {
@@ -13,5 +14,6 @@ struct Eating_Pattern_AnalyzerApp: App {
         WindowGroup {
             MealForm()
         }
+        .modelContainer(for: Meal.self)
     }
 }
